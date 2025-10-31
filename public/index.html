@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Priscilla Johnston | Personal Website</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+    :root {
+      color-scheme: light;
+      --gradient-start: #f8dcff;
+      --gradient-middle: #f4c7ff;
+      --gradient-end: #e9b7ff;
+      --overlay: rgba(255, 255, 255, 0.3);
+      --glass: rgba(255, 255, 255, 0.58);
+      --glass-border: rgba(255, 255, 255, 0.7);
+      --text-primary: #2e174b;
+      --text-secondary: rgba(46, 23, 75, 0.68);
+      --text-tertiary: rgba(46, 23, 75, 0.5);
+      --accent: #9757ff;
+      --accent-soft: rgba(151, 87, 255, 0.12);
+      --accent-strong: rgba(151, 87, 255, 0.28);
+      --surface: rgba(255, 255, 255, 0.72);
+      --max-width: 1120px;
+      scroll-behavior: smooth;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text-primary);
+      background: linear-gradient(120deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
+      background-size: 240% 240%;
+      animation: gradientShift 16s ease-in-out infinite;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -35%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.7), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(255, 221, 255, 0.55), transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(247, 200, 255, 0.65), transparent 58%);
+      filter: blur(90px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.78;
+      animation: glowDrift 18s ease-in-out infinite alternate;
+    }
+
+    .heart-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 18px 32px 24px;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      letter-spacing: 0.42em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(255, 182, 236, 0.95);
+      text-shadow: 0 0 20px rgba(255, 182, 236, 0.7);
+      pointer-events: none;
+      z-index: 6;
+      box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    header {
+      position: fixed;
+      top: 74px;
+      left: 0;
+      right: 0;
+      height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 32px;
+      z-index: 5;
+    }
+
+    nav.menu {
+      width: min(calc(100% - 48px), var(--max-width));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 26px;
+      border-radius: 999px;
+      backdrop-filter: blur(22px);
+      background: var(--surface);
+      border: 1.5px solid var(--glass-border);
+      box-shadow: 0 24px 60px rgba(62, 23, 124, 0.17);
+    }
+
+    .brand {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 600;
+      font-size: 1.35rem;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .nav-links a {
+      position: relative;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text-secondary);
+      padding: 10px 18px;
+      border-radius: 999px;
+      transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: var(--text-primary);
+      background: var(--accent-soft);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      padding: 210px 32px 96px;
+      width: 100%;
+    }
+
+    section {
+      scroll-margin-top: 230px;
+    }
+
+    .content-wrapper {
+      width: min(calc(100% - 32px), var(--max-width));
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 90px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 36px;
+      padding: 64px;
+      border-radius: 36px;
+      background: var(--surface);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 32px 70px rgba(62, 23, 124, 0.15);
+      backdrop-filter: blur(28px);
+    }
+
+    .eyebrow {
+      font-size: 0.95rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.8rem, 6vw, 4.25rem);
+      line-height: 1.05;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .lead {
+      font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 720px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 52px;
+      padding: 0 28px;
+      border-radius: 999px;
+      border: 1.5px solid transparent;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, #a67cff, #d6b6ff);
+      color: #fff;
+      box-shadow: 0 18px 40px rgba(151, 87, 255, 0.35);
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 52px rgba(151, 87, 255, 0.45);
+      outline: none;
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--text-primary);
+      border-color: rgba(151, 87, 255, 0.4);
+    }
+
+    .button.secondary:hover,
+    .button.secondary:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(151, 87, 255, 0.6);
+      background: rgba(255, 255, 255, 0.9);
+      outline: none;
+    }
+
+    .content-section {
+      display: grid;
+      gap: 28px;
+      padding: 52px 56px;
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.64);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 24px 60px rgba(62, 23, 124, 0.12);
+      backdrop-filter: blur(18px);
+    }
+
+    .content-section h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.9rem, 4vw, 2.6rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+
+    .about-grid {
+      display: grid;
+      gap: 32px;
+    }
+
+    .about-grid p {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+
+    .project-pong {
+      display: grid;
+      gap: 32px;
+    }
+
+    .project-description {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+
+    .pong-showcase {
+      display: grid;
+      gap: 22px;
+      border-radius: 28px;
+      padding: 36px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 28px 66px rgba(62, 23, 124, 0.15);
+    }
+
+    .pong-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .pong-meta h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.8rem;
+      color: var(--text-primary);
+    }
+
+    .pong-meta span {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+
+    .pong-board {
+      border-radius: 24px;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.32));
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+      box-shadow: inset 0 0 22px rgba(151, 87, 255, 0.18);
+    }
+
+    .pong-stats {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .scoreboard {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .scoreboard span strong {
+      font-size: 1.65rem;
+      margin-left: 8px;
+    }
+
+    .pong-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .pong-controls button {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(151, 87, 255, 0.45);
+      background: linear-gradient(135deg, rgba(151, 87, 255, 0.15), rgba(214, 182, 255, 0.55));
+      color: var(--text-primary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pong-controls button:hover,
+    .pong-controls button:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 38px rgba(151, 87, 255, 0.28);
+      outline: none;
+    }
+
+    .pong-hint {
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    canvas#pongCanvas {
+      width: 100%;
+      height: auto;
+      max-height: 420px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(23, 7, 54, 0.92), rgba(75, 22, 115, 0.88));
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.32);
+    }
+
+    .contact-message {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      max-width: 620px;
+    }
+
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .contact-actions a {
+      font-size: 1rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(151, 87, 255, 0.35);
+      background: rgba(255, 255, 255, 0.76);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .contact-actions a:hover,
+    .contact-actions a:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(151, 87, 255, 0.55);
+      box-shadow: 0 20px 45px rgba(151, 87, 255, 0.24);
+      outline: none;
+    }
+
+    footer {
+      padding: 36px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 880px) {
+      nav.menu {
+        padding: 16px 20px;
+      }
+
+      .nav-links {
+        gap: 12px;
+      }
+
+      .nav-links a {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+      }
+
+      .heart-banner {
+        letter-spacing: 0.2em;
+      }
+
+      header {
+        top: 70px;
+      }
+
+      main {
+        padding: 200px 20px 80px;
+      }
+
+      section {
+        scroll-margin-top: 210px;
+      }
+
+      .hero,
+      .content-section {
+        padding: 40px 32px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      header {
+        height: auto;
+        padding-top: 18px;
+      }
+
+      .heart-banner {
+        padding: 16px 18px 20px;
+        font-size: 1.8rem;
+      }
+
+      header {
+        top: 66px;
+      }
+
+      nav.menu {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      section {
+        scroll-margin-top: 190px;
+      }
+
+      .hero,
+      .content-section {
+        padding: 32px 24px;
+      }
+
+      .actions,
+      .contact-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .button,
+      .contact-actions a {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @keyframes gradientShift {
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    @keyframes glowDrift {
+      0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.72;
+      }
+
+      100% {
+        transform: scale(1.05) rotate(8deg);
+        opacity: 0.85;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="heart-banner" aria-hidden="true"></div>
+  <header>
+    <nav class="menu" aria-label="Primary navigation">
+      <a class="brand" href="#home">Priscilla Johnston</a>
+      <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="content-wrapper">
+      <section id="home" class="hero">
+        <span class="eyebrow" aria-label="pink hearts">💖💗💕💓💞</span>
+        <h1>Priscilla Johnston</h1>
+        <div class="actions">
+          <a class="button primary" href="#contact">Let's Connect</a>
+          <a class="button secondary" href="#projects">View Recent Work</a>
+        </div>
+      </section>
+
+      <section id="about" class="content-section">
+        <h2>About</h2>
+        <div class="about-grid">
+          <p>I am a senior at Harvard-Westlake High School in LA. I love running on the beach and, of course, comp sci class.</p>
+        </div>
+      </section>
+
+      <section id="projects" class="content-section">
+        <h2>Projects</h2>
+        <div class="project-pong">
+          <p class="project-description">A minimalist Pong experience built from scratch for the web. Paddle with your keyboard, challenge the adaptive AI opponent, and watch the smooth lavender gradient arena respond to every volley.</p>
+          <div class="pong-showcase">
+            <div class="pong-meta">
+              <div>
+                <span>Interactive Prototype</span>
+                <h3>Lavender Rally Pong</h3>
+              </div>
+              <div class="pong-controls">
+                <button id="pongToggle">Play</button>
+                <div class="pong-hint">Controls: W/S or ↑/↓</div>
+              </div>
+            </div>
+            <div class="pong-board">
+              <div class="pong-stats">
+                <div class="scoreboard">
+                  <span>Player<strong id="playerScore">0</strong></span>
+                  <span>AI<strong id="aiScore">0</strong></span>
+                </div>
+                <div class="pong-hint">First to 7 wins</div>
+              </div>
+              <canvas id="pongCanvas" width="760" height="420" aria-label="Pong game canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="content-section">
+        <h2>Contact</h2>
+        <p class="contact-message">Connect with me yay!</p>
+        <div class="contact-actions">
+          <a href="mailto:priscillajohnston100@gmail.com">priscillajohnston100@gmail.com</a>
+          <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Priscilla Johnston. Crafted with curiosity and care.
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const heartBanner = document.querySelector('.heart-banner');
+
+    function renderHeartBanner() {
+      if (!heartBanner) return;
+      const availableWidth = heartBanner.clientWidth || window.innerWidth;
+      heartBanner.textContent = '💖';
+      const heartWidth = heartBanner.scrollWidth || 1;
+      const count = Math.max(5, Math.floor(availableWidth / heartWidth));
+      heartBanner.textContent = '💖'.repeat(count);
+    }
+
+    renderHeartBanner();
+    window.addEventListener('resize', renderHeartBanner);
+
+    (function () {
+      const canvas = document.getElementById('pongCanvas');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      const toggleButton = document.getElementById('pongToggle');
+      const playerScoreEl = document.getElementById('playerScore');
+      const aiScoreEl = document.getElementById('aiScore');
+
+      const arena = { width: canvas.width, height: canvas.height };
+
+      const player = { x: 36, y: arena.height / 2 - 45, width: 14, height: 90, speed: 6, score: 0 };
+      const ai = { x: arena.width - 50, y: arena.height / 2 - 45, width: 14, height: 90, speed: 5.2, score: 0 };
+      const ball = { x: arena.width / 2, y: arena.height / 2, radius: 10, dx: 0, dy: 0, speed: 6.2 };
+
+      const keys = { up: false, down: false, w: false, s: false };
+
+      let animationId;
+      let isRunning = false;
+      let matchOver = false;
+
+      function serveBall(direction = 1) {
+        ball.x = arena.width / 2;
+        ball.y = arena.height / 2;
+        ball.dx = direction * ball.speed;
+        ball.dy = (Math.random() * 2 - 1) * (ball.speed * 0.7);
+      }
+
+      function resetMatch() {
+        player.score = 0;
+        ai.score = 0;
+        playerScoreEl.textContent = '0';
+        aiScoreEl.textContent = '0';
+        serveBall(Math.random() > 0.5 ? 1 : -1);
+        player.y = arena.height / 2 - player.height / 2;
+        ai.y = arena.height / 2 - ai.height / 2;
+        matchOver = false;
+      }
+
+      function drawArena() {
+        ctx.fillStyle = 'rgba(18, 4, 43, 1)';
+        ctx.fillRect(0, 0, arena.width, arena.height);
+
+        ctx.setLineDash([10, 12]);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(arena.width / 2, 0);
+        ctx.lineTo(arena.width / 2, arena.height);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+        ctx.beginPath();
+        ctx.arc(arena.width / 2, arena.height / 2, 46, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawPaddle(paddle) {
+        const gradient = ctx.createLinearGradient(0, paddle.y, 0, paddle.y + paddle.height);
+        gradient.addColorStop(0, 'rgba(216, 182, 255, 0.95)');
+        gradient.addColorStop(1, 'rgba(151, 87, 255, 0.85)');
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = 'rgba(151, 87, 255, 0.55)';
+        ctx.shadowBlur = 12;
+        ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+        ctx.shadowBlur = 0;
+      }
+
+      function drawBall() {
+        const gradient = ctx.createRadialGradient(ball.x, ball.y, 2, ball.x, ball.y, ball.radius);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+        gradient.addColorStop(1, 'rgba(200, 170, 255, 0.8)');
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.4)';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      function drawMatchPoint() {
+        if (!matchOver) return;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.fillRect(0, 0, arena.width, arena.height);
+        ctx.fillStyle = '#fff';
+        ctx.font = '600 28px "Poppins", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${player.score >= 7 ? 'Player' : 'AI'} wins!`, arena.width / 2, arena.height / 2);
+      }
+
+      function updatePlayer() {
+        if (keys.up || keys.w) {
+          player.y -= player.speed;
+        }
+        if (keys.down || keys.s) {
+          player.y += player.speed;
+        }
+
+        if (player.y < 16) player.y = 16;
+        if (player.y + player.height > arena.height - 16) player.y = arena.height - 16 - player.height;
+      }
+
+      function updateAI() {
+        const target = ball.y - (ai.height / 2);
+        const easing = Math.min(1, Math.abs(target - ai.y) / 60);
+        ai.y += Math.sign(target - ai.y) * ai.speed * easing;
+
+        if (ai.y < 16) ai.y = 16;
+        if (ai.y + ai.height > arena.height - 16) ai.y = arena.height - 16 - ai.height;
+      }
+
+      function updateBall() {
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        if (ball.y - ball.radius <= 10 || ball.y + ball.radius >= arena.height - 10) {
+          ball.dy = -ball.dy;
+        }
+
+        if (
+          ball.x - ball.radius <= player.x + player.width &&
+          ball.y >= player.y &&
+          ball.y <= player.y + player.height &&
+          ball.dx < 0
+        ) {
+          ball.dx = -ball.dx;
+          ball.x = player.x + player.width + ball.radius;
+          const impact = (ball.y - player.y - player.height / 2) / (player.height / 2);
+          ball.dy = impact * ball.speed;
+        }
+
+        if (
+          ball.x + ball.radius >= ai.x &&
+          ball.y >= ai.y &&
+          ball.y <= ai.y + ai.height &&
+          ball.dx > 0
+        ) {
+          ball.dx = -ball.dx;
+          ball.x = ai.x - ball.radius;
+          const impact = (ball.y - ai.y - ai.height / 2) / (ai.height / 2);
+          ball.dy = impact * ball.speed;
+        }
+
+        if (ball.x < 0) {
+          ai.score += 1;
+          aiScoreEl.textContent = String(ai.score);
+          checkMatchPoint();
+          serveBall(1);
+        } else if (ball.x > arena.width) {
+          player.score += 1;
+          playerScoreEl.textContent = String(player.score);
+          checkMatchPoint();
+          serveBall(-1);
+        }
+      }
+
+      function checkMatchPoint() {
+        if (player.score >= 7 || ai.score >= 7) {
+          matchOver = true;
+          isRunning = false;
+          toggleButton.textContent = 'Play Again';
+        }
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, arena.width, arena.height);
+        drawArena();
+        drawPaddle(player);
+        drawPaddle(ai);
+        drawBall();
+        drawMatchPoint();
+
+        if (isRunning && !matchOver) {
+          updatePlayer();
+          updateAI();
+          updateBall();
+        }
+
+        animationId = requestAnimationFrame(loop);
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowUp') keys.up = true;
+        if (event.key === 'ArrowDown') keys.down = true;
+        if (event.key === 'w' || event.key === 'W') keys.w = true;
+        if (event.key === 's' || event.key === 'S') keys.s = true;
+      });
+
+      document.addEventListener('keyup', (event) => {
+        if (event.key === 'ArrowUp') keys.up = false;
+        if (event.key === 'ArrowDown') keys.down = false;
+        if (event.key === 'w' || event.key === 'W') keys.w = false;
+        if (event.key === 's' || event.key === 'S') keys.s = false;
+      });
+
+      toggleButton.addEventListener('click', () => {
+        if (matchOver) {
+          resetMatch();
+        }
+        isRunning = !isRunning;
+        toggleButton.textContent = isRunning ? 'Pause' : matchOver ? 'Play Again' : 'Play';
+        if (isRunning && ball.dx === 0 && ball.dy === 0) {
+          serveBall(Math.random() > 0.5 ? 1 : -1);
+        }
+      });
+
+      resetMatch();
+      loop();
+
+      window.addEventListener('beforeunload', () => cancelAnimationFrame(animationId));
+    })();
+  </script>
+</body>
+
+</html>
