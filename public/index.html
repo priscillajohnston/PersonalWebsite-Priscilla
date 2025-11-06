@@ -495,6 +495,43 @@
       display: none;
     }
 
+    .demo-explainer {
+      margin-top: 24px;
+      padding: 24px 28px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 18px 45px rgba(62, 23, 124, 0.12);
+      display: grid;
+      gap: 18px;
+      font-size: 0.98rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .demo-explainer h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .demo-explainer ul {
+      list-style: disc inside;
+      display: grid;
+      gap: 8px;
+    }
+
+    .demo-explainer code {
+      font-family: 'Menlo', 'Fira Code', monospace;
+      font-size: 0.92rem;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 3px 6px;
+      border-radius: 6px;
+    }
+
     .control-row {
       display: flex;
       flex-wrap: wrap;
@@ -763,6 +800,22 @@
             <div><strong>Flight time:</strong> <span id="summaryTime">0.00 s</span></div>
           </div>
           <canvas id="demoCanvas" class="demo-canvas" width="920" height="420" aria-label="Animated diagram of a girl tossing a beach ball"></canvas>
+        </div>
+        <div class="demo-explainer">
+          <div>
+            <h3>Projectile Motion</h3>
+            <p>Projectile motion describes how an object moves when the only force acting on it is gravity. Once the flower leaves the thrower’s hand, its horizontal motion remains constant while gravity accelerates it downward. The path we see is a parabola because the horizontal and vertical motions combine.</p>
+          </div>
+          <div>
+            <strong>Key equations</strong>
+            <ul>
+              <li>Time of flight: <code>T = (v · sinθ + √((v · sinθ)² + 2g · h)) / g</code></li>
+              <li>Horizontal range: <code>Δx = v · cosθ · T</code></li>
+              <li>Maximum height: <code>H = h + (v² · sin²θ) / (2g)</code></li>
+              <li>Vertical position over time: <code>y(t) = h + v · sinθ · t − ½ g t²</code></li>
+            </ul>
+            <p>These formulas let us predict how far and how high the flower travels for any launch speed <code>v</code>, angle <code>θ</code>, and launch height <code>h</code>.</p>
+          </div>
         </div>
       </section>
 
