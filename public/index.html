@@ -742,20 +742,20 @@
             <div class="demo-actions">
               <button id="demoReset" class="demo-reset" type="button">Reset</button>
               <button id="demoPlay" class="demo-play" type="button">Play</button>
-            </div>
-          </div>
+      </div>
+      </div>
           <div class="demo-controls" aria-label="Projectile parameters">
             <div class="control-row">
               <label for="angleControl">Launch angle</label>
               <output id="angleValue" for="angleControl">30°</output>
-            </div>
+      </div>
             <input id="angleControl" type="range" min="10" max="70" value="30" step="1" aria-label="Launch angle in degrees">
             <div class="control-row">
               <label for="speedControl">Initial speed</label>
               <output id="speedValue" for="speedControl">8.0 m/s</output>
-            </div>
+    </div>
             <input id="speedControl" type="range" min="4" max="15" value="8" step="0.5" aria-label="Initial velocity in meters per second">
-          </div>
+  </div>
           <div class="demo-summary" aria-live="polite">
             <div><strong>Δx (horizontal):</strong> <span id="summaryDx">0.0 m</span></div>
             <div><strong>Launch height:</strong> <span id="summaryLaunchHeight">0.0 m</span></div>
@@ -821,7 +821,7 @@
       const launchPoint = { x: 150, y: groundY - 120 };
       const pixelsPerMeter = 30;
       const gravity = 9.81 * pixelsPerMeter;
-      const ball = { radius: 14 };
+      const ball = { x: launchPoint.x, y: launchPoint.y, radius: 14, vx: 0, vy: 0 };
 
       let launchSpeed = Number(speedSlider.value) * pixelsPerMeter;
       let angle = Number(angleSlider.value) * Math.PI / 180;
@@ -830,6 +830,8 @@
       let running = false;
       let lastDistance = null;
       let launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
+      let prevTimestamp = null;
+      let peakY = launchPoint.y;
 
       function velocityComponents() {
         return {
@@ -884,7 +886,7 @@
 
         ctx.strokeStyle = color;
         ctx.lineWidth = 4;
-        ctx.beginPath();
+      ctx.beginPath();
         ctx.arc(centerX, headY, headRadius, 0, Math.PI * 2);
         ctx.stroke();
 
@@ -991,7 +993,7 @@
           const clampedX = Math.min(landingX, width - 40);
           ctx.strokeStyle = 'rgba(63, 30, 96, 0.7)';
           ctx.lineWidth = 3;
-          ctx.beginPath();
+      ctx.beginPath();
           ctx.moveTo(launchPoint.x, groundY - 4);
           ctx.lineTo(clampedX, groundY - 4);
           ctx.stroke();
@@ -1014,7 +1016,7 @@
           ctx.lineTo(clampedX - 8, groundY - 10);
           ctx.lineTo(clampedX - 8, groundY + 2);
           ctx.closePath();
-          ctx.fill();
+      ctx.fill();
         }
       }
 
@@ -1025,27 +1027,54 @@
         playButton.disabled = false;
       }
 
+      function computeTrajectoryMetrics() {
+        const g = gravity / pixelsPerMeter;
+        const theta = angle;
+        const launchSpeedMps = launchSpeed / pixelsPerMeter;
+        const vx = launchSpeedMps * Math.cos(theta);
+        const vy = launchSpeedMps * Math.sin(theta);
+        const discriminant = vy * vy + 2 * g * launchHeight;
+        const flightTime = (vy + Math.sqrt(Math.max(discriminant, 0))) / g;
+        const range = vx * flightTime;
+        const maxHeight = launchHeight + (vy * vy) / (2 * g);
+
+        return { range, flightTime, maxHeight, launchHeight };
+      }
+
       function animate(timestamp) {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const t = (timestamp - startTimestamp) / 1000;
+        if (!startTimestamp) {
+          startTimestamp = timestamp;
+          prevTimestamp = timestamp;
+        }
 
-        const point = trajectoryPoint(t);
-        let ballY = point.y;
-        let ballX = point.x;
+        const dt = Math.max((timestamp - prevTimestamp) / 1000, 0);
+        prevTimestamp = timestamp;
 
-        if (ballY >= groundY - ball.radius) {
-          ballY = groundY - ball.radius;
-          ballX = point.x;
-          lastDistance = Math.max(0, (ballX - launchPoint.x) / pixelsPerMeter);
-          const flightTime = t;
-          const maxHeight = computeMaxHeight();
-          updateSummary(lastDistance, launchHeight, maxHeight, flightTime);
-          drawScene(ballX, ballY);
+        ball.vy += gravity * dt;
+        ball.x += ball.vx * dt;
+        ball.y += ball.vy * dt;
+        peakY = Math.min(peakY, ball.y);
+
+        if (ball.y + ball.radius >= groundY) {
+          ball.y = groundY - ball.radius;
+          ball.x = Math.min(ball.x, width - ball.radius);
+          const elapsed = (timestamp - startTimestamp) / 1000;
+          const rangeMeters = Math.max(0, (ball.x - launchPoint.x) / pixelsPerMeter);
+          const maxHeightMeters = Math.max(launchHeight, (groundY - peakY) / pixelsPerMeter);
+          const stats = {
+            range: rangeMeters,
+            flightTime: elapsed,
+            maxHeight: maxHeightMeters,
+            launchHeight
+          };
+          lastDistance = stats.range;
+          updateSummary(stats);
+          drawScene(ball.x, ball.y);
           stopAnimation();
           return;
         }
 
-        drawScene(ballX, ballY);
+        drawScene(ball.x, ball.y);
         animationId = requestAnimationFrame(animate);
       }
 
@@ -1054,9 +1083,16 @@
         running = true;
         playButton.disabled = true;
         startTimestamp = null;
+        prevTimestamp = null;
         launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
         lastDistance = null;
-        drawScene(launchPoint.x, launchPoint.y);
+        const velocity = velocityComponents();
+        ball.x = launchPoint.x;
+        ball.y = launchPoint.y;
+        ball.vx = velocity.x;
+        ball.vy = velocity.y;
+        peakY = ball.y;
+        drawScene(ball.x, ball.y);
         animationId = requestAnimationFrame(animate);
       }
 
@@ -1070,8 +1106,14 @@
           heading.textContent = `${angleSlider.value}° launch angle beach throw`;
         }
         lastDistance = null;
-        drawScene(launchPoint.x, launchPoint.y);
-        updateSummary(0, launchHeight, launchHeight, 0);
+        const velocity = velocityComponents();
+        ball.x = launchPoint.x;
+        ball.y = launchPoint.y;
+        ball.vx = velocity.x;
+        ball.vy = velocity.y;
+        peakY = ball.y;
+        drawScene(ball.x, ball.y);
+        updateSummary(computeTrajectoryMetrics());
       }
 
       playButton.addEventListener('click', startAnimation);
@@ -1096,11 +1138,12 @@
         if (animationId) cancelAnimationFrame(animationId);
       });
     
-      function updateSummary(dxMeters, launchMeters, maxMeters, timeSeconds) {
-        summaryDx.textContent = `${dxMeters.toFixed(1)} m`;
+      function updateSummary(stats) {
+        const { range, flightTime, maxHeight, launchHeight: launchMeters } = stats;
+        summaryDx.textContent = `${range.toFixed(1)} m`;
         summaryLaunchHeight.textContent = `${launchMeters.toFixed(1)} m`;
-        summaryMaxHeight.textContent = `${maxMeters.toFixed(1)} m`;
-        summaryTime.textContent = `${timeSeconds.toFixed(2)} s`;
+        summaryMaxHeight.textContent = `${maxHeight.toFixed(1)} m`;
+        summaryTime.textContent = `${flightTime.toFixed(2)} s`;
       }
     })();
 
