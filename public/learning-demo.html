@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projectile Motion Demo | Priscilla Johnston</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+    :root {
+      color-scheme: light;
+      --gradient-start: #f8dcff;
+      --gradient-middle: #f4c7ff;
+      --gradient-end: #e9b7ff;
+      --text-primary: #2e174b;
+      --text-secondary: rgba(46, 23, 75, 0.68);
+      --text-tertiary: rgba(46, 23, 75, 0.5);
+      --surface: rgba(255, 255, 255, 0.72);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text-primary);
+      background: linear-gradient(120deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
+    }
+
+    .heart-banner {
+      padding: 18px 32px 24px;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      letter-spacing: 0.42em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(255, 182, 236, 0.95);
+      text-shadow: 0 0 20px rgba(255, 182, 236, 0.7);
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 32px 48px;
+    }
+
+    nav.menu {
+      width: min(calc(100% - 48px), 1120px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 26px;
+      border-radius: 999px;
+      backdrop-filter: blur(22px);
+      background: var(--surface);
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 24px 60px rgba(62, 23, 124, 0.17);
+    }
+
+    .brand {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 600;
+      font-size: 1.35rem;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text-tertiary);
+      padding: 10px 18px;
+      border-radius: 999px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible,
+    .nav-links a.active {
+      background: rgba(151, 87, 255, 0.15);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    main {
+      padding: 0 32px 96px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .content {
+      width: min(100%, 960px);
+      padding: 56px 64px 72px;
+      border-radius: 36px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 24px 65px rgba(62, 23, 124, 0.15);
+      display: grid;
+      gap: 32px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+
+    .demo-panel {
+      display: grid;
+      gap: 20px;
+    }
+
+    .demo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .demo-header span {
+      font-size: 0.9rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+
+    .demo-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .demo-controls {
+      display: grid;
+      gap: 12px;
+      padding: 18px 22px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 12px 32px rgba(62, 23, 124, 0.12);
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+    }
+
+    .control-row label {
+      font-weight: 600;
+    }
+
+    .control-row input[type="range"] {
+      width: 100%;
+    }
+
+    .demo-summary {
+      display: grid;
+      gap: 10px;
+      padding: 20px 24px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 18px 45px rgba(62, 23, 124, 0.12);
+      font-size: 0.98rem;
+      color: var(--text-secondary);
+    }
+
+    .demo-summary strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .demo-play,
+    .demo-reset {
+      height: 44px;
+      padding: 0 26px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(151, 87, 255, 0.45);
+      background: linear-gradient(135deg, rgba(151, 87, 255, 0.22), rgba(214, 182, 255, 0.6));
+      color: var(--text-primary);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .demo-play:hover,
+    .demo-play:focus-visible,
+    .demo-reset:hover,
+    .demo-reset:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(151, 87, 255, 0.28);
+      outline: none;
+    }
+
+    .demo-play:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .demo-reset {
+      background: rgba(255, 255, 255, 0.85);
+      border-color: rgba(151, 87, 255, 0.35);
+    }
+
+    .demo-reset:hover,
+    .demo-reset:focus-visible {
+      box-shadow: 0 16px 32px rgba(151, 87, 255, 0.18);
+    }
+
+    .demo-canvas {
+      width: 100%;
+      max-width: 820px;
+      height: auto;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(239, 232, 255, 0.85), rgba(206, 190, 255, 0.6));
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: inset 0 0 24px rgba(151, 87, 255, 0.18);
+      margin: 0 auto;
+      display: block;
+    }
+
+    .demo-explainer {
+      margin-top: 8px;
+      padding: 24px 28px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 18px 45px rgba(62, 23, 124, 0.12);
+      display: grid;
+      gap: 18px;
+      font-size: 0.98rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .demo-explainer h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .demo-explainer ul {
+      list-style: disc inside;
+      display: grid;
+      gap: 8px;
+    }
+
+    .demo-explainer code {
+      font-family: 'Menlo', 'Fira Code', monospace;
+      font-size: 0.92rem;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 3px 6px;
+      border-radius: 6px;
+    }
+
+    footer {
+      padding: 36px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 820px) {
+      header {
+        padding: 0 20px 32px;
+      }
+
+      nav.menu {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      main {
+        padding: 0 20px 72px;
+      }
+
+      .content {
+        padding: 40px 28px 52px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="heart-banner" aria-hidden="true"></div>
+  <header>
+    <nav class="menu" aria-label="Primary navigation">
+      <a class="brand" href="index.html">Priscilla Johnston</a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="learning-demo.html" class="active">Projectile Motion Demo</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="content">
+      <h1>Projectile Motion Demo</h1>
+      <p>Change the launch angle and initial speed to see how gravity shapes the flower’s flight. The numbers update with every throw so you can match what you observe on the canvas with the equations you learn in physics.</p>
+
+      <div class="demo-panel">
+        <div class="demo-header">
+          <span id="demoHeading">30° launch angle beach throw</span>
+          <div class="demo-actions">
+            <button id="demoReset" class="demo-reset" type="button">Reset</button>
+            <button id="demoPlay" class="demo-play" type="button">Play</button>
+          </div>
+        </div>
+        <div class="demo-controls" aria-label="Projectile parameters">
+          <div class="control-row">
+            <label for="angleControl">Launch angle</label>
+            <output id="angleValue" for="angleControl">30°</output>
+          </div>
+          <input id="angleControl" type="range" min="10" max="70" value="30" step="1" aria-label="Launch angle in degrees">
+          <div class="control-row">
+            <label for="speedControl">Initial speed</label>
+            <output id="speedValue" for="speedControl">8.0 m/s</output>
+          </div>
+          <input id="speedControl" type="range" min="4" max="15" value="8" step="0.5" aria-label="Initial velocity in meters per second">
+        </div>
+        <div class="demo-summary" aria-live="polite">
+          <div><strong>Δx (horizontal):</strong> <span id="summaryDx">0.0 m</span></div>
+          <div><strong>Launch height:</strong> <span id="summaryLaunchHeight">0.0 m</span></div>
+          <div><strong>Max height:</strong> <span id="summaryMaxHeight">0.0 m</span></div>
+          <div><strong>Flight time:</strong> <span id="summaryTime">0.00 s</span></div>
+        </div>
+        <canvas id="demoCanvas" class="demo-canvas" width="920" height="420" aria-label="Animated diagram of a girl tossing a beach ball"></canvas>
+      </div>
+
+      <div class="demo-explainer">
+        <div>
+          <h3>Projectile Motion</h3>
+          <p>Projectile motion describes how an object moves when the only force acting on it is gravity. Once the flower leaves the thrower’s hand, its horizontal velocity stays constant while gravity accelerates it downward—combining to form a smooth parabolic arc.</p>
+        </div>
+        <div>
+          <strong>Key equations</strong>
+          <ul>
+            <li>Time of flight: <code>T = (v · sinθ + √((v · sinθ)² + 2g · h)) / g</code></li>
+            <li>Horizontal range: <code>Δx = v · cosθ · T</code></li>
+            <li>Maximum height: <code>H = h + (v² · sin²θ) / (2g)</code></li>
+            <li>Vertical position: <code>y(t) = h + v · sinθ · t − ½ g t²</code></li>
+          </ul>
+          <p>Adjusting the angle θ or speed v changes both the flight time and the range. Launch height h shifts the entire path upward, which is why the flower starts above the sand.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Priscilla Johnston. Crafted with curiosity and care.
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const heartBanner = document.querySelector('.heart-banner');
+
+    function renderHeartBanner() {
+      if (!heartBanner) return;
+      const availableWidth = heartBanner.clientWidth || window.innerWidth;
+      heartBanner.textContent = '💖';
+      const heartWidth = heartBanner.scrollWidth || 1;
+      const count = Math.max(5, Math.floor(availableWidth / heartWidth));
+      heartBanner.textContent = '💖'.repeat(count);
+    }
+
+    renderHeartBanner();
+    window.addEventListener('resize', renderHeartBanner);
+
+    (function () {
+      const canvas = document.getElementById('demoCanvas');
+      const playButton = document.getElementById('demoPlay');
+      const angleSlider = document.getElementById('angleControl');
+      const speedSlider = document.getElementById('speedControl');
+      const angleValue = document.getElementById('angleValue');
+      const speedValue = document.getElementById('speedValue');
+      const summaryDx = document.getElementById('summaryDx');
+      const summaryLaunchHeight = document.getElementById('summaryLaunchHeight');
+      const summaryMaxHeight = document.getElementById('summaryMaxHeight');
+      const summaryTime = document.getElementById('summaryTime');
+      const resetButton = document.getElementById('demoReset');
+      const heading = document.getElementById('demoHeading');
+      if (!canvas || !playButton || !angleSlider || !speedSlider || !resetButton || !summaryDx || !summaryLaunchHeight || !summaryMaxHeight || !summaryTime) return;
+
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      const groundY = height - 46;
+      const launchPoint = { x: 150, y: groundY - 120 };
+      const pixelsPerMeter = 30;
+      const gravity = 9.81 * pixelsPerMeter;
+      const ball = { x: launchPoint.x, y: launchPoint.y, radius: 14, vx: 0, vy: 0 };
+
+      let launchSpeed = Number(speedSlider.value) * pixelsPerMeter;
+      let angle = Number(angleSlider.value) * Math.PI / 180;
+      let animationId;
+      let startTimestamp = null;
+      let prevTimestamp = null;
+      let running = false;
+      let lastDistance = null;
+      let launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
+      let peakY = launchPoint.y;
+
+      function velocityComponents() {
+        return {
+          x: launchSpeed * Math.cos(angle),
+          y: -launchSpeed * Math.sin(angle)
+        };
+      }
+
+      function drawBackground() {
+        const sky = ctx.createLinearGradient(0, 0, 0, height);
+        sky.addColorStop(0, 'rgba(240, 232, 255, 0.95)');
+        sky.addColorStop(1, 'rgba(215, 194, 255, 0.85)');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = 'rgba(164, 216, 255, 0.5)';
+        ctx.fillRect(0, groundY - 70, width, 36);
+
+        const sand = ctx.createLinearGradient(0, groundY - 34, 0, height);
+        sand.addColorStop(0, 'rgba(255, 233, 199, 0.9)');
+        sand.addColorStop(1, 'rgba(240, 200, 160, 0.95)');
+        ctx.fillStyle = sand;
+        ctx.fillRect(0, groundY - 34, width, height - (groundY - 34));
+
+        drawAngleGuide();
+        drawGirl();
+      }
+
+      function drawGirl() {
+        const color = '#ff4fb0';
+        const headRadius = 16;
+        const centerX = launchPoint.x - 70;
+        const headY = launchPoint.y - 42;
+        const torsoY = headY + headRadius + 4;
+
+        ctx.save();
+        ctx.lineCap = 'round';
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(centerX, headY, headRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, headY + headRadius);
+        ctx.lineTo(centerX, headY + headRadius + 46);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, headY + headRadius + 46);
+        ctx.lineTo(centerX - 22, groundY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, headY + headRadius + 46);
+        ctx.lineTo(centerX + 16, groundY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, torsoY + 16);
+        ctx.lineTo(centerX - 40, launchPoint.y - 4);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, torsoY + 10);
+        ctx.lineTo(launchPoint.x - 10, launchPoint.y - 12);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(launchPoint.x - 8, launchPoint.y - 12);
+        ctx.arc(launchPoint.x - 4, launchPoint.y - 6, 6, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawAngleGuide() {
+        ctx.strokeStyle = 'rgba(255, 154, 214, 0.6)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([6, 10]);
+        ctx.beginPath();
+        ctx.moveTo(launchPoint.x, launchPoint.y);
+        ctx.lineTo(launchPoint.x + 160, launchPoint.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(launchPoint.x, launchPoint.y);
+        ctx.lineTo(launchPoint.x + 160 * Math.cos(angle), launchPoint.y - 160 * Math.sin(angle));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = 'rgba(255, 154, 214, 0.85)';
+        ctx.beginPath();
+        ctx.moveTo(launchPoint.x + 36, launchPoint.y);
+        ctx.arc(launchPoint.x, launchPoint.y, 36, 0, -angle, true);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#3d1f5a';
+        ctx.font = "600 18px 'Poppins', sans-serif";
+        ctx.save();
+        ctx.translate(launchPoint.x + 44, launchPoint.y - 12);
+        ctx.rotate(-angle / 2);
+        const angleDeg = (angle * 180 / Math.PI).toFixed(0);
+        ctx.fillText(`${angleDeg}°`, 0, 0);
+        ctx.restore();
+      }
+
+      function drawScene(ballX, ballY) {
+        ctx.clearRect(0, 0, width, height);
+        drawBackground();
+
+        ctx.save();
+        ctx.translate(ballX, ballY);
+        const spinAngle = (Date.now() / 150) % (Math.PI * 2);
+        ctx.rotate(spinAngle);
+        ctx.font = `${ball.radius * 2.1}px 'Segoe UI Emoji','Apple Color Emoji',sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🌸', 0, 0);
+        ctx.restore();
+
+        if (lastDistance !== null) {
+          const landingX = launchPoint.x + lastDistance * pixelsPerMeter;
+          const clampedX = Math.min(landingX, width - ball.radius);
+          ctx.strokeStyle = 'rgba(63, 30, 96, 0.7)';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(launchPoint.x, groundY - 4);
+          ctx.lineTo(clampedX, groundY - 4);
+          ctx.stroke();
+
+          ctx.fillStyle = 'rgba(63, 30, 96, 0.9)';
+          ctx.font = "600 18px 'Poppins', sans-serif";
+          ctx.textAlign = 'center';
+          ctx.fillText(`${lastDistance.toFixed(1)} m`, launchPoint.x + (clampedX - launchPoint.x) / 2, groundY - 14);
+
+          ctx.beginPath();
+          ctx.moveTo(launchPoint.x, groundY - 4);
+          ctx.lineTo(launchPoint.x + 8, groundY - 10);
+          ctx.lineTo(launchPoint.x + 8, groundY + 2);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(clampedX, groundY - 4);
+          ctx.lineTo(clampedX - 8, groundY - 10);
+          ctx.lineTo(clampedX - 8, groundY + 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+
+      function animate(timestamp) {
+        if (!startTimestamp) {
+          startTimestamp = timestamp;
+          prevTimestamp = timestamp;
+        }
+
+        const dt = Math.max((timestamp - prevTimestamp) / 1000, 0);
+        prevTimestamp = timestamp;
+
+        ball.vy += gravity * dt;
+        ball.x += ball.vx * dt;
+        ball.y += ball.vy * dt;
+        peakY = Math.min(peakY, ball.y);
+
+        if (ball.y + ball.radius >= groundY) {
+          ball.y = groundY - ball.radius;
+          const stats = computeTrajectoryMetrics();
+          lastDistance = stats.range;
+          ball.x = Math.min(launchPoint.x + stats.range * pixelsPerMeter, width - ball.radius);
+          updateSummary(stats);
+          drawScene(ball.x, ball.y);
+          stopAnimation();
+          return;
+        }
+
+        drawScene(ball.x, ball.y);
+        animationId = requestAnimationFrame(animate);
+      }
+
+      function startAnimation() {
+        if (running) return;
+        running = true;
+        playButton.disabled = true;
+        startTimestamp = null;
+        prevTimestamp = null;
+        launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
+        lastDistance = null;
+        const velocity = velocityComponents();
+        ball.x = launchPoint.x;
+        ball.y = launchPoint.y;
+        ball.vx = velocity.x;
+        ball.vy = velocity.y;
+        peakY = ball.y;
+        drawScene(ball.x, ball.y);
+        animationId = requestAnimationFrame(animate);
+      }
+
+      function resetScene() {
+        angle = Number(angleSlider.value) * Math.PI / 180;
+        launchSpeed = Number(speedSlider.value) * pixelsPerMeter;
+        launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
+        angleValue.textContent = `${angleSlider.value}°`;
+        speedValue.textContent = `${Number(speedSlider.value).toFixed(1)} m/s`;
+        if (heading) {
+          heading.textContent = `${angleSlider.value}° launch angle beach throw`;
+        }
+        lastDistance = null;
+        const velocity = velocityComponents();
+        ball.x = launchPoint.x;
+        ball.y = launchPoint.y;
+        ball.vx = velocity.x;
+        ball.vy = velocity.y;
+        peakY = ball.y;
+        drawScene(ball.x, ball.y);
+        updateSummary(computeTrajectoryMetrics());
+      }
+
+      playButton.addEventListener('click', startAnimation);
+      angleSlider.addEventListener('input', () => {
+        if (running) stopAnimation();
+        resetScene();
+      });
+      speedSlider.addEventListener('input', () => {
+        if (running) stopAnimation();
+        resetScene();
+      });
+      resetButton.addEventListener('click', () => {
+        stopAnimation();
+        angleSlider.value = '30';
+        speedSlider.value = '8';
+        resetScene();
+      });
+
+      resetScene();
+
+      window.addEventListener('beforeunload', () => {
+        if (animationId) cancelAnimationFrame(animationId);
+      });
+
+      function computeTrajectoryMetrics() {
+        const g = gravity / pixelsPerMeter;
+        const theta = angle;
+        const launchSpeedMps = launchSpeed / pixelsPerMeter;
+        const vx = launchSpeedMps * Math.cos(theta);
+        const vy = launchSpeedMps * Math.sin(theta);
+        const discriminant = vy * vy + 2 * g * launchHeight;
+        const flightTime = (vy + Math.sqrt(Math.max(discriminant, 0))) / g;
+        const range = vx * flightTime;
+        const maxHeight = launchHeight + (vy * vy) / (2 * g);
+
+        return { range, flightTime, maxHeight, launchHeight };
+      }
+
+      function updateSummary(stats) {
+        const { range, flightTime, maxHeight, launchHeight: launchMeters } = stats;
+        summaryDx.textContent = `${range.toFixed(1)} m`;
+        summaryLaunchHeight.textContent = `${launchMeters.toFixed(1)} m`;
+        summaryMaxHeight.textContent = `${maxHeight.toFixed(1)} m`;
+        summaryTime.textContent = `${flightTime.toFixed(2)} s`;
+      }
+
+      function stopAnimation() {
+        if (animationId) cancelAnimationFrame(animationId);
+        animationId = null;
+        running = false;
+        playButton.disabled = false;
+      }
+    })();
+  </script>
+</body>
+
+</html>
