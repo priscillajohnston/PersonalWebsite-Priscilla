@@ -1,5 +1,13 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, onSnapshot, Timestamp, GeoPoint, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  Timestamp,
+  GeoPoint,
+  addDoc,
+  serverTimestamp,
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js';
 
 const firebaseConfig = {
@@ -304,7 +312,15 @@ try {
   }
 
   function collectDetailKeys(data) {
-    const reserved = new Set(['name', 'cuisine', 'neighborhood', 'city', 'state', 'rating']);
+    const reserved = new Set([
+      'name',
+      'cuisine',
+      'neighborhood',
+      'city',
+      'state',
+      'rating',
+      'likeCount',
+    ]);
     const preferredOrder = [
       'favoriteDishes',
       'tags',

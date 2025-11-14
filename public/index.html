@@ -16,15 +16,46 @@
       --overlay: rgba(255, 255, 255, 0.3);
       --glass: rgba(255, 255, 255, 0.58);
       --glass-border: rgba(255, 255, 255, 0.7);
+      --surface: rgba(255, 255, 255, 0.72);
+      --surface-card: rgba(255, 255, 255, 0.78);
+      --surface-strong: rgba(255, 255, 255, 0.9);
+      --surface-border: rgba(255, 255, 255, 0.7);
+      --surface-border-strong: rgba(255, 255, 255, 0.78);
       --text-primary: #2e174b;
       --text-secondary: rgba(46, 23, 75, 0.68);
       --text-tertiary: rgba(46, 23, 75, 0.5);
       --accent: #9757ff;
       --accent-soft: rgba(151, 87, 255, 0.12);
       --accent-strong: rgba(151, 87, 255, 0.28);
-      --surface: rgba(255, 255, 255, 0.72);
+      --shadow-soft: rgba(62, 23, 124, 0.17);
+      --shadow-medium: rgba(62, 23, 124, 0.15);
+      --shadow-card: rgba(62, 23, 124, 0.14);
       --max-width: 1120px;
       scroll-behavior: smooth;
+    }
+
+    :root[data-theme='dark'] {
+      color-scheme: dark;
+      --gradient-start: #100720;
+      --gradient-middle: #1b0f33;
+      --gradient-end: #301a4b;
+      --overlay: rgba(24, 16, 48, 0.5);
+      --glass: rgba(30, 23, 51, 0.88);
+      --glass-border: rgba(138, 120, 198, 0.35);
+      --surface: rgba(33, 26, 54, 0.82);
+      --surface-card: rgba(30, 23, 51, 0.88);
+      --surface-strong: rgba(28, 20, 48, 0.92);
+      --surface-border: rgba(138, 120, 198, 0.32);
+      --surface-border-strong: rgba(138, 120, 198, 0.38);
+      --text-primary: #f1ecff;
+      --text-secondary: rgba(241, 236, 255, 0.72);
+      --text-tertiary: rgba(241, 236, 255, 0.55);
+      --accent: #c6a7ff;
+      --accent-soft: rgba(198, 167, 255, 0.18);
+      --accent-strong: rgba(198, 167, 255, 0.35);
+      --shadow-soft: rgba(12, 7, 22, 0.6);
+      --shadow-medium: rgba(10, 6, 18, 0.48);
+      --shadow-card: rgba(8, 5, 16, 0.45);
     }
 
     * {
@@ -59,6 +90,14 @@
       animation: glowDrift 18s ease-in-out infinite alternate;
     }
 
+    :root[data-theme='dark'] body::before {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(123, 80, 200, 0.5), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(94, 60, 160, 0.45), transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(148, 88, 198, 0.5), transparent 58%);
+      opacity: 0.6;
+    }
+
     .heart-banner {
       position: relative;
       width: 100%;
@@ -90,14 +129,15 @@
     nav.menu {
       width: min(calc(100% - 48px), var(--max-width));
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-between;
+      gap: 18px;
       padding: 18px 26px;
       border-radius: 999px;
       backdrop-filter: blur(22px);
       background: var(--surface);
       border: 1.5px solid var(--glass-border);
-      box-shadow: 0 24px 60px rgba(62, 23, 124, 0.17);
+      box-shadow: 0 24px 60px var(--shadow-soft);
     }
 
     .brand {
@@ -107,6 +147,12 @@
       letter-spacing: 0.08em;
       color: var(--text-primary);
       text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
     .nav-links {
@@ -139,6 +185,41 @@
       outline: none;
     }
 
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1.5px solid var(--surface-border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .theme-toggle:hover,
+    .theme-toggle:focus-visible {
+      background: var(--accent-soft);
+      color: var(--text-primary);
+      border-color: var(--accent-border);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .theme-toggle-icon {
+      font-size: 1.1rem;
+    }
+
+    .theme-toggle-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.16em;
+    }
+
     main {
       position: relative;
       z-index: 1;
@@ -163,9 +244,9 @@
       gap: 36px;
       padding: 64px;
       border-radius: 36px;
-      background: var(--surface);
+      background: var(--surface-card);
       border: 1px solid var(--glass-border);
-      box-shadow: 0 32px 70px rgba(62, 23, 124, 0.15);
+      box-shadow: 0 32px 70px var(--shadow-medium);
       backdrop-filter: blur(28px);
     }
 
@@ -655,10 +736,11 @@
       nav.menu {
         flex-direction: column;
         gap: 12px;
+        align-items: stretch;
       }
 
       .nav-links {
-      width: 100%;
+        width: 100%;
         justify-content: space-between;
       }
 
@@ -681,6 +763,14 @@
       .contact-actions a {
         width: 100%;
         justify-content: center;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .nav-actions {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
       }
     }
 
@@ -714,13 +804,19 @@
   <header>
     <nav class="menu" aria-label="Primary navigation">
       <a class="brand" href="index.html">Priscilla Johnston</a>
-      <div class="nav-links">
-        <a href="index.html" class="active">Home</a>
-        <a href="about.html">About</a>
-        <a href="projects.html">Projects</a>
-        <a href="learning-demo.html">Projectile Motion Demo</a>
-        <a href="restaurants.html">Restaurants</a>
-        <a href="contact.html">Contact</a>
+      <div class="nav-actions">
+        <div class="nav-links">
+          <a href="index.html" class="active">Home</a>
+          <a href="about.html">About</a>
+          <a href="projects.html">Projects</a>
+          <a href="learning-demo.html">Projectile Motion Demo</a>
+          <a href="restaurants.html">Restaurants</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+          <span aria-hidden="true" class="theme-toggle-icon">☀</span>
+          <span class="theme-toggle-label">Light mode</span>
+        </button>
   </div>
     </nav>
   </header>
@@ -742,6 +838,7 @@
     © <span id="year"></span> Priscilla Johnston. Crafted with curiosity and care.
   </footer>
 
+  <script src="scripts/theme.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
