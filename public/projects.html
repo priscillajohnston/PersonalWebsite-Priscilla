@@ -301,6 +301,175 @@
       margin-left: 8px;
     }
 
+    .scoreboard .high-score {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .scoreboard .high-score::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 22px;
+      background: rgba(151, 87, 255, 0.25);
+    }
+
+    .player-identity {
+      display: grid;
+      gap: 10px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(151, 87, 255, 0.22);
+      box-shadow: 0 10px 26px rgba(62, 23, 124, 0.12);
+    }
+
+    .player-identity label {
+      font-size: 0.75rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+
+    .player-identity-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .player-identity input[type='text'] {
+      flex: 1 1 180px;
+      min-width: 160px;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(151, 87, 255, 0.28);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .player-identity input[type='text']:focus-visible {
+      outline: none;
+      border-color: rgba(151, 87, 255, 0.6);
+      box-shadow: 0 0 0 4px rgba(151, 87, 255, 0.15);
+    }
+
+    .player-identity button {
+      height: 40px;
+      padding: 0 20px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(151, 87, 255, 0.45);
+      background: linear-gradient(135deg, rgba(151, 87, 255, 0.2), rgba(214, 182, 255, 0.6));
+      color: var(--text-primary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .player-identity button:hover,
+    .player-identity button:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(151, 87, 255, 0.24);
+      outline: none;
+    }
+
+    .player-identity-status {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+    }
+
+    .leaderboard {
+      display: grid;
+      gap: 16px;
+      padding: 24px 28px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 20px 46px rgba(62, 23, 124, 0.12);
+    }
+
+    .leaderboard-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .leaderboard-header h4 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .leaderboard-sync {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .leaderboard-list {
+      margin: 0;
+      padding: 0 0 0 18px;
+      display: grid;
+      gap: 10px;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .leaderboard-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: rgba(151, 87, 255, 0.08);
+      border: 1px solid rgba(151, 87, 255, 0.15);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .leaderboard-list li.is-self {
+      background: rgba(151, 87, 255, 0.18);
+      border-color: rgba(151, 87, 255, 0.35);
+      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.4);
+    }
+
+    .leaderboard-entry-name {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+    }
+
+    .leaderboard-entry-score {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+    }
+
+    .leaderboard-empty,
+    .leaderboard-error {
+      font-size: 0.9rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+    }
+
+    .leaderboard-error {
+      color: #b3261e;
+    }
+
     canvas#pongCanvas {
       width: 100%;
       height: auto;
@@ -393,10 +562,36 @@
             <div class="scoreboard">
               <span>Player<strong id="playerScore">0</strong></span>
               <span>AI<strong id="aiScore">0</strong></span>
+              <span class="high-score">High Score<strong id="highScore">0</strong></span>
             </div>
-            <div class="pong-hint">First to 7 wins</div>
+            <div class="pong-hint">Endless rally—play as long as you like</div>
           </div>
+          <form id="playerIdentityForm" class="player-identity" autocomplete="off">
+            <label for="playerNameInput">Player Name</label>
+            <div class="player-identity-controls">
+              <input
+                id="playerNameInput"
+                name="playerName"
+                type="text"
+                inputmode="text"
+                maxlength="32"
+                placeholder="Lavender Legend"
+                aria-describedby="playerNameStatus"
+              />
+              <button type="submit">Save</button>
+            </div>
+            <p id="playerNameStatus" class="player-identity-status" hidden></p>
+          </form>
           <canvas id="pongCanvas" width="760" height="420" aria-label="Pong game canvas"></canvas>
+          <section class="leaderboard" aria-labelledby="leaderboardTitle">
+            <div class="leaderboard-header">
+              <h4 id="leaderboardTitle">Leaderboard</h4>
+              <span id="leaderboardSyncState" class="leaderboard-sync" hidden></span>
+            </div>
+            <ol id="leaderboardList" class="leaderboard-list" aria-live="polite"></ol>
+            <p id="leaderboardEmpty" class="leaderboard-empty">No scores yet—be the first to set the pace!</p>
+            <p id="leaderboardError" class="leaderboard-error" hidden></p>
+          </section>
         </div>
       </article>
     </section>
@@ -407,237 +602,7 @@
   </footer>
 
   <script src="scripts/theme.js"></script>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    const heartBanner = document.querySelector('.heart-banner');
-
-    function renderHeartBanner() {
-      if (!heartBanner) return;
-      const availableWidth = heartBanner.clientWidth || window.innerWidth;
-      heartBanner.textContent = '💖';
-      const heartWidth = heartBanner.scrollWidth || 1;
-      const count = Math.max(5, Math.floor(availableWidth / heartWidth));
-      heartBanner.textContent = '💖'.repeat(count);
-    }
-
-    renderHeartBanner();
-    window.addEventListener('resize', renderHeartBanner);
-
-    (function () {
-      const canvas = document.getElementById('pongCanvas');
-      if (!canvas) return;
-
-      const ctx = canvas.getContext('2d');
-      const toggleButton = document.getElementById('pongToggle');
-      const playerScoreEl = document.getElementById('playerScore');
-      const aiScoreEl = document.getElementById('aiScore');
-
-      const arena = { width: canvas.width, height: canvas.height };
-
-      const player = { x: 36, y: arena.height / 2 - 45, width: 14, height: 90, speed: 6, score: 0 };
-      const ai = { x: arena.width - 50, y: arena.height / 2 - 45, width: 14, height: 90, speed: 5.2, score: 0 };
-      const ball = { x: arena.width / 2, y: arena.height / 2, radius: 10, dx: 0, dy: 0, speed: 6.2 };
-
-      const keys = { up: false, down: false, w: false, s: false };
-
-      let animationId;
-      let isRunning = false;
-      let matchOver = false;
-
-      function serveBall(direction = 1) {
-        ball.x = arena.width / 2;
-        ball.y = arena.height / 2;
-        ball.dx = direction * ball.speed;
-        ball.dy = (Math.random() * 2 - 1) * (ball.speed * 0.7);
-      }
-
-      function resetMatch() {
-        player.score = 0;
-        ai.score = 0;
-        playerScoreEl.textContent = '0';
-        aiScoreEl.textContent = '0';
-        serveBall(Math.random() > 0.5 ? 1 : -1);
-        player.y = arena.height / 2 - player.height / 2;
-        ai.y = arena.height / 2 - ai.height / 2;
-        matchOver = false;
-      }
-
-      function drawArena() {
-        ctx.fillStyle = 'rgba(18, 4, 43, 1)';
-        ctx.fillRect(0, 0, arena.width, arena.height);
-
-        ctx.setLineDash([10, 12]);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(arena.width / 2, 0);
-        ctx.lineTo(arena.width / 2, arena.height);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
-        ctx.beginPath();
-        ctx.arc(arena.width / 2, arena.height / 2, 46, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      function drawPaddle(paddle) {
-        const gradient = ctx.createLinearGradient(0, paddle.y, 0, paddle.y + paddle.height);
-        gradient.addColorStop(0, 'rgba(216, 182, 255, 0.95)');
-        gradient.addColorStop(1, 'rgba(151, 87, 255, 0.85)');
-        ctx.fillStyle = gradient;
-        ctx.shadowColor = 'rgba(151, 87, 255, 0.55)';
-        ctx.shadowBlur = 12;
-        ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-        ctx.shadowBlur = 0;
-      }
-
-      function drawBall() {
-        const gradient = ctx.createRadialGradient(ball.x, ball.y, 2, ball.x, ball.y, ball.radius);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-        gradient.addColorStop(1, 'rgba(200, 170, 255, 0.8)');
-        ctx.fillStyle = gradient;
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.4)';
-        ctx.shadowBlur = 14;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-
-      function drawMatchPoint() {
-        if (!matchOver) return;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-        ctx.fillRect(0, 0, arena.width, arena.height);
-        ctx.fillStyle = '#fff';
-        ctx.font = '600 28px "Poppins", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${player.score >= 7 ? 'Player' : 'AI'} wins!`, arena.width / 2, arena.height / 2);
-      }
-
-      function updatePlayer() {
-        if (keys.up || keys.w) {
-          player.y -= player.speed;
-        }
-        if (keys.down || keys.s) {
-          player.y += player.speed;
-        }
-
-        if (player.y < 16) player.y = 16;
-        if (player.y + player.height > arena.height - 16) player.y = arena.height - 16 - player.height;
-      }
-
-      function updateAI() {
-        const target = ball.y - (ai.height / 2);
-        const easing = Math.min(1, Math.abs(target - ai.y) / 60);
-        ai.y += Math.sign(target - ai.y) * ai.speed * easing;
-
-        if (ai.y < 16) ai.y = 16;
-        if (ai.y + ai.height > arena.height - 16) ai.y = arena.height - 16 - ai.height;
-      }
-
-      function updateBall() {
-        ball.x += ball.dx;
-        ball.y += ball.dy;
-
-        if (ball.y - ball.radius <= 10 || ball.y + ball.radius >= arena.height - 10) {
-          ball.dy = -ball.dy;
-        }
-
-        if (
-          ball.x - ball.radius <= player.x + player.width &&
-          ball.y >= player.y &&
-          ball.y <= player.y + player.height &&
-          ball.dx < 0
-        ) {
-          ball.dx = -ball.dx;
-          ball.x = player.x + player.width + ball.radius;
-          const impact = (ball.y - player.y - player.height / 2) / (player.height / 2);
-          ball.dy = impact * ball.speed;
-        }
-
-        if (
-          ball.x + ball.radius >= ai.x &&
-          ball.y >= ai.y &&
-          ball.y <= ai.y + ai.height &&
-          ball.dx > 0
-        ) {
-          ball.dx = -ball.dx;
-          ball.x = ai.x - ball.radius;
-          const impact = (ball.y - ai.y - ai.height / 2) / (ai.height / 2);
-          ball.dy = impact * ball.speed;
-        }
-
-        if (ball.x < 0) {
-          ai.score += 1;
-          aiScoreEl.textContent = String(ai.score);
-          checkMatchPoint();
-          serveBall(1);
-        } else if (ball.x > arena.width) {
-          player.score += 1;
-          playerScoreEl.textContent = String(player.score);
-          checkMatchPoint();
-          serveBall(-1);
-        }
-      }
-
-      function checkMatchPoint() {
-        if (player.score >= 7 || ai.score >= 7) {
-          matchOver = true;
-          isRunning = false;
-          toggleButton.textContent = 'Play Again';
-        }
-      }
-
-      function loop() {
-        ctx.clearRect(0, 0, arena.width, arena.height);
-        drawArena();
-        drawPaddle(player);
-        drawPaddle(ai);
-        drawBall();
-        drawMatchPoint();
-
-        if (isRunning && !matchOver) {
-          updatePlayer();
-          updateAI();
-          updateBall();
-        }
-
-        animationId = requestAnimationFrame(loop);
-      }
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowUp') keys.up = true;
-        if (event.key === 'ArrowDown') keys.down = true;
-        if (event.key === 'w' || event.key === 'W') keys.w = true;
-        if (event.key === 's' || event.key === 'S') keys.s = true;
-      });
-
-      document.addEventListener('keyup', (event) => {
-        if (event.key === 'ArrowUp') keys.up = false;
-        if (event.key === 'ArrowDown') keys.down = false;
-        if (event.key === 'w' || event.key === 'W') keys.w = false;
-        if (event.key === 's' || event.key === 'S') keys.s = false;
-      });
-
-      toggleButton.addEventListener('click', () => {
-        if (matchOver) {
-          resetMatch();
-        }
-        isRunning = !isRunning;
-        toggleButton.textContent = isRunning ? 'Pause' : matchOver ? 'Play Again' : 'Play';
-        if (isRunning && ball.dx === 0 && ball.dy === 0) {
-          serveBall(Math.random() > 0.5 ? 1 : -1);
-        }
-      });
-
-      resetMatch();
-      loop();
-
-      window.addEventListener('beforeunload', () => cancelAnimationFrame(animationId));
-    })();
-  </script>
+  <script type="module" src="scripts/pong.js"></script>
 </body>
 
 </html>
