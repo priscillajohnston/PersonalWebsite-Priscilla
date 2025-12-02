@@ -521,25 +521,40 @@
       const width = canvas.width;
       const height = canvas.height;
       const groundY = height - 46;
-      const launchPoint = { x: 150, y: groundY - 120 };
-      const pixelsPerMeter = 30;
-      const gravity = 9.81 * pixelsPerMeter;
-      const ball = { x: launchPoint.x, y: launchPoint.y, radius: 14, vx: 0, vy: 0 };
+      const launchX = Math.round(width * 0.16);
+      const rightMargin = 64;
+      const gravityMeters = 9.81;
+      const maxLaunchSpeedMeters = Number(speedSlider.max);
+      const optimalRangeAngle = Math.PI / 4;
+      const maxRangeMeters =
+        (maxLaunchSpeedMeters * maxLaunchSpeedMeters * Math.sin(2 * optimalRangeAngle)) / gravityMeters;
+      const pixelsPerMeter = Math.min((width - rightMargin - launchX) / maxRangeMeters, 36);
+      const gravity = gravityMeters * pixelsPerMeter;
+      const launchHeightMeters = 2.5; // person release point in meters
+      const launchHeightPixels = launchHeightMeters * pixelsPerMeter;
+      const launchPoint = { x: launchX, y: groundY - launchHeightPixels };
+      const maxRangeMetersOnCanvas = (width - rightMargin - launchPoint.x) / pixelsPerMeter;
+      const ball = {
+        x: launchPoint.x,
+        y: launchPoint.y,
+        radius: Math.max(12, Math.round(pixelsPerMeter * 0.38)),
+        vx: 0,
+        vy: 0
+      };
 
-      let launchSpeed = Number(speedSlider.value) * pixelsPerMeter;
-      let angle = Number(angleSlider.value) * Math.PI / 180;
-      let animationId;
-      let startTimestamp = null;
+      let launchSpeedMeters = Number(speedSlider.value);
+      let launchSpeed = launchSpeedMeters * pixelsPerMeter;
+      let angle = (Number(angleSlider.value) * Math.PI) / 180;
+      let animationId = null;
       let prevTimestamp = null;
       let running = false;
       let lastDistance = null;
-      let launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
-      let peakY = launchPoint.y;
+      const highlightThickness = Math.max(2.5, pixelsPerMeter * 0.08);
 
       function velocityComponents() {
         return {
           x: launchSpeed * Math.cos(angle),
-          y: -launchSpeed * Math.sin(angle)
+          y: -launchSpeed * Math.sin(angle),
         };
       }
 
@@ -551,13 +566,16 @@
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = 'rgba(164, 216, 255, 0.5)';
-        ctx.fillRect(0, groundY - 70, width, 36);
+        const waterTop = groundY - Math.round(pixelsPerMeter * 1.8);
+        const waterHeight = Math.round(pixelsPerMeter * 0.9);
+        ctx.fillRect(0, waterTop, width, waterHeight);
 
-        const sand = ctx.createLinearGradient(0, groundY - 34, 0, height);
+        const sandTop = groundY - Math.round(pixelsPerMeter * 0.9);
+        const sand = ctx.createLinearGradient(0, sandTop, 0, height);
         sand.addColorStop(0, 'rgba(255, 233, 199, 0.9)');
         sand.addColorStop(1, 'rgba(240, 200, 160, 0.95)');
         ctx.fillStyle = sand;
-        ctx.fillRect(0, groundY - 34, width, height - (groundY - 34));
+        ctx.fillRect(0, sandTop, width, height - sandTop);
 
         drawAngleGuide();
         drawGirl();
@@ -565,81 +583,92 @@
 
       function drawGirl() {
         const color = '#ff4fb0';
-        const headRadius = 16;
-        const centerX = launchPoint.x - 70;
-        const headY = launchPoint.y - 42;
-        const torsoY = headY + headRadius + 4;
+        const baseY = groundY;
+        const figureX = launchPoint.x - pixelsPerMeter * 0.95;
+        const headRadius = Math.max(8, pixelsPerMeter * 0.18);
+        const shoulderY = launchPoint.y - pixelsPerMeter * 0.12;
+        const headCenterY = shoulderY - headRadius - pixelsPerMeter * 0.08;
+        const hipY = baseY - pixelsPerMeter * 0.78;
+        const rearFootX = figureX - pixelsPerMeter * 0.32;
+        const frontFootX = figureX + pixelsPerMeter * 0.28;
+        const elbowX = figureX + pixelsPerMeter * 0.25;
+        const elbowY = shoulderY - pixelsPerMeter * 0.24;
+        const backHandX = figureX - pixelsPerMeter * 0.55;
+        const backHandY = shoulderY + pixelsPerMeter * 0.48;
+        const handX = launchPoint.x - ball.radius * 0.65;
+        const handY = launchPoint.y - ball.radius * 0.4;
+        const lineWidth = Math.max(3, pixelsPerMeter * 0.09);
 
         ctx.save();
         ctx.lineCap = 'round';
-
         ctx.strokeStyle = color;
-        ctx.lineWidth = 4;
+        ctx.lineWidth = lineWidth;
         ctx.beginPath();
-        ctx.arc(centerX, headY, headRadius, 0, Math.PI * 2);
+        ctx.arc(figureX, headCenterY, headRadius, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(centerX, headY + headRadius);
-        ctx.lineTo(centerX, headY + headRadius + 46);
+        ctx.moveTo(figureX, shoulderY);
+        ctx.lineTo(figureX, hipY);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(centerX, headY + headRadius + 46);
-        ctx.lineTo(centerX - 22, groundY);
+        ctx.moveTo(figureX, hipY);
+        ctx.lineTo(rearFootX, baseY);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(centerX, headY + headRadius + 46);
-        ctx.lineTo(centerX + 16, groundY);
+        ctx.moveTo(figureX, hipY);
+        ctx.lineTo(frontFootX, baseY);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(centerX, torsoY + 16);
-        ctx.lineTo(centerX - 40, launchPoint.y - 4);
+        ctx.moveTo(figureX, shoulderY + pixelsPerMeter * 0.12);
+        ctx.lineTo(backHandX, backHandY);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(centerX, torsoY + 10);
-        ctx.lineTo(launchPoint.x - 10, launchPoint.y - 12);
+        ctx.moveTo(figureX, shoulderY);
+        ctx.lineTo(elbowX, elbowY);
+        ctx.lineTo(handX, handY);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(launchPoint.x - 8, launchPoint.y - 12);
-        ctx.arc(launchPoint.x - 4, launchPoint.y - 6, 6, 0, Math.PI * 2);
+        ctx.arc(handX + ball.radius * 0.3, handY + ball.radius * 0.3, Math.max(3, ball.radius * 0.35), 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.restore();
       }
 
       function drawAngleGuide() {
+        const guideLength = Math.min(width - launchPoint.x - rightMargin, pixelsPerMeter * 5);
         ctx.strokeStyle = 'rgba(255, 154, 214, 0.6)';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = highlightThickness;
         ctx.setLineDash([6, 10]);
         ctx.beginPath();
         ctx.moveTo(launchPoint.x, launchPoint.y);
-        ctx.lineTo(launchPoint.x + 160, launchPoint.y);
+        ctx.lineTo(launchPoint.x + guideLength, launchPoint.y);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(launchPoint.x, launchPoint.y);
-        ctx.lineTo(launchPoint.x + 160 * Math.cos(angle), launchPoint.y - 160 * Math.sin(angle));
+        ctx.lineTo(launchPoint.x + guideLength * Math.cos(angle), launchPoint.y - guideLength * Math.sin(angle));
         ctx.stroke();
         ctx.setLineDash([]);
 
+        const arcRadius = Math.max(24, pixelsPerMeter * 0.9);
         ctx.fillStyle = 'rgba(255, 154, 214, 0.85)';
         ctx.beginPath();
-        ctx.moveTo(launchPoint.x + 36, launchPoint.y);
-        ctx.arc(launchPoint.x, launchPoint.y, 36, 0, -angle, true);
+        ctx.moveTo(launchPoint.x + arcRadius, launchPoint.y);
+        ctx.arc(launchPoint.x, launchPoint.y, arcRadius, 0, -angle, true);
         ctx.closePath();
         ctx.fill();
 
         ctx.fillStyle = '#3d1f5a';
-        ctx.font = "600 18px 'Poppins', sans-serif";
+        ctx.font = `600 ${Math.max(14, pixelsPerMeter * 0.36)}px 'Poppins', sans-serif`;
         ctx.save();
-        ctx.translate(launchPoint.x + 44, launchPoint.y - 12);
+        ctx.translate(launchPoint.x + arcRadius + 10, launchPoint.y - arcRadius * 0.45);
         ctx.rotate(-angle / 2);
-        const angleDeg = (angle * 180 / Math.PI).toFixed(0);
-        ctx.fillText(`${angleDeg}°`, 0, 0);
+        ctx.fillText(`${(angle * 180 / Math.PI).toFixed(0)}°`, 0, 0);
         ctx.restore();
       }
 
@@ -658,55 +687,66 @@
         ctx.restore();
 
         if (lastDistance !== null) {
-          const landingX = launchPoint.x + lastDistance * pixelsPerMeter;
-          const clampedX = Math.min(landingX, width - ball.radius);
+          const visibleRange = Math.min(lastDistance, maxRangeMetersOnCanvas);
+          const landingX = launchPoint.x + visibleRange * pixelsPerMeter;
           ctx.strokeStyle = 'rgba(63, 30, 96, 0.7)';
-          ctx.lineWidth = 3;
+          ctx.lineWidth = highlightThickness;
           ctx.beginPath();
-          ctx.moveTo(launchPoint.x, groundY - 4);
-          ctx.lineTo(clampedX, groundY - 4);
+          ctx.moveTo(launchPoint.x, groundY - highlightThickness * 1.5);
+          ctx.lineTo(landingX, groundY - highlightThickness * 1.5);
           ctx.stroke();
 
           ctx.fillStyle = 'rgba(63, 30, 96, 0.9)';
-          ctx.font = "600 18px 'Poppins', sans-serif";
+          ctx.font = `600 ${Math.max(16, pixelsPerMeter * 0.45)}px 'Poppins', sans-serif`;
           ctx.textAlign = 'center';
-          ctx.fillText(`${lastDistance.toFixed(1)} m`, launchPoint.x + (clampedX - launchPoint.x) / 2, groundY - 14);
+          ctx.fillText(
+            `${lastDistance.toFixed(1)} m`,
+            launchPoint.x + (landingX - launchPoint.x) / 2,
+            groundY - highlightThickness * 6,
+          );
 
+          const arrowSize = Math.max(8, pixelsPerMeter * 0.26);
           ctx.beginPath();
-          ctx.moveTo(launchPoint.x, groundY - 4);
-          ctx.lineTo(launchPoint.x + 8, groundY - 10);
-          ctx.lineTo(launchPoint.x + 8, groundY + 2);
+          ctx.moveTo(launchPoint.x, groundY - highlightThickness * 1.5);
+          ctx.lineTo(launchPoint.x + arrowSize, groundY - highlightThickness * 3.4);
+          ctx.lineTo(launchPoint.x + arrowSize, groundY - highlightThickness * -0.4);
           ctx.closePath();
           ctx.fill();
 
           ctx.beginPath();
-          ctx.moveTo(clampedX, groundY - 4);
-          ctx.lineTo(clampedX - 8, groundY - 10);
-          ctx.lineTo(clampedX - 8, groundY + 2);
+          ctx.moveTo(landingX, groundY - highlightThickness * 1.5);
+          ctx.lineTo(landingX - arrowSize, groundY - highlightThickness * 3.4);
+          ctx.lineTo(landingX - arrowSize, groundY - highlightThickness * -0.4);
           ctx.closePath();
           ctx.fill();
         }
       }
 
       function animate(timestamp) {
-        if (!startTimestamp) {
-          startTimestamp = timestamp;
+        if (prevTimestamp === null) {
           prevTimestamp = timestamp;
+          animationId = requestAnimationFrame(animate);
+          return;
         }
 
-        const dt = Math.max((timestamp - prevTimestamp) / 1000, 0);
+        const deltaMs = timestamp - prevTimestamp;
         prevTimestamp = timestamp;
+        const dt = Math.min(Math.max(deltaMs / 1000, 0), 0.05);
 
         ball.vy += gravity * dt;
         ball.x += ball.vx * dt;
         ball.y += ball.vy * dt;
-        peakY = Math.min(peakY, ball.y);
+
+        if (ball.x > launchPoint.x + maxRangeMetersOnCanvas * pixelsPerMeter) {
+          ball.x = launchPoint.x + maxRangeMetersOnCanvas * pixelsPerMeter;
+        }
 
         if (ball.y + ball.radius >= groundY) {
           ball.y = groundY - ball.radius;
           const stats = computeTrajectoryMetrics();
           lastDistance = stats.range;
-          ball.x = Math.min(launchPoint.x + stats.range * pixelsPerMeter, width - ball.radius);
+          const clampedRange = Math.min(stats.range, maxRangeMetersOnCanvas);
+          ball.x = launchPoint.x + clampedRange * pixelsPerMeter;
           updateSummary(stats);
           drawScene(ball.x, ball.y);
           stopAnimation();
@@ -721,26 +761,23 @@
         if (running) return;
         running = true;
         playButton.disabled = true;
-        startTimestamp = null;
         prevTimestamp = null;
-        launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
         lastDistance = null;
         const velocity = velocityComponents();
         ball.x = launchPoint.x;
         ball.y = launchPoint.y;
         ball.vx = velocity.x;
         ball.vy = velocity.y;
-        peakY = ball.y;
         drawScene(ball.x, ball.y);
         animationId = requestAnimationFrame(animate);
       }
 
       function resetScene() {
-        angle = Number(angleSlider.value) * Math.PI / 180;
-        launchSpeed = Number(speedSlider.value) * pixelsPerMeter;
-        launchHeight = (groundY - launchPoint.y) / pixelsPerMeter;
+        angle = (Number(angleSlider.value) * Math.PI) / 180;
+        launchSpeedMeters = Number(speedSlider.value);
+        launchSpeed = launchSpeedMeters * pixelsPerMeter;
         angleValue.textContent = `${angleSlider.value}°`;
-        speedValue.textContent = `${Number(speedSlider.value).toFixed(1)} m/s`;
+        speedValue.textContent = `${launchSpeedMeters.toFixed(1)} m/s`;
         if (heading) {
           heading.textContent = `${angleSlider.value}° launch angle beach throw`;
         }
@@ -750,7 +787,6 @@
         ball.y = launchPoint.y;
         ball.vx = velocity.x;
         ball.vy = velocity.y;
-        peakY = ball.y;
         drawScene(ball.x, ball.y);
         updateSummary(computeTrajectoryMetrics());
       }
@@ -778,17 +814,16 @@
       });
 
       function computeTrajectoryMetrics() {
-        const g = gravity / pixelsPerMeter;
+        const g = gravityMeters;
         const theta = angle;
-        const launchSpeedMps = launchSpeed / pixelsPerMeter;
-        const vx = launchSpeedMps * Math.cos(theta);
-        const vy = launchSpeedMps * Math.sin(theta);
-        const discriminant = vy * vy + 2 * g * launchHeight;
+        const vx = launchSpeedMeters * Math.cos(theta);
+        const vy = launchSpeedMeters * Math.sin(theta);
+        const discriminant = vy * vy + 2 * g * launchHeightMeters;
         const flightTime = (vy + Math.sqrt(Math.max(discriminant, 0))) / g;
-        const range = vx * flightTime;
-        const maxHeight = launchHeight + (vy * vy) / (2 * g);
+        const range = Math.max(0, vx * flightTime);
+        const maxHeight = launchHeightMeters + (vy * vy) / (2 * g);
 
-        return { range, flightTime, maxHeight, launchHeight };
+        return { range, flightTime, maxHeight, launchHeight: launchHeightMeters };
       }
 
       function updateSummary(stats) {
@@ -803,6 +838,7 @@
         if (animationId) cancelAnimationFrame(animationId);
         animationId = null;
         running = false;
+        prevTimestamp = null;
         playButton.disabled = false;
       }
     })();
